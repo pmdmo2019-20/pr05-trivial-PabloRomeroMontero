@@ -22,4 +22,9 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.fcDetail, TittleFragment.newInstance())
         }
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 }

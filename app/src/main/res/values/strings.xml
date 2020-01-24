@@ -36,7 +36,8 @@
     <string name="game_won_btnNextMatch">Next Match</string>
     <string name="game_won_imgYouWin">You win</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment hi</string>
+    <string name="dialog_key_preference">dialog_key</string>
+    <string name="question_key_preference">numberQuestions_key</string>
+    <string name="default_numberQuestions">5</string>
 
 </resources>
