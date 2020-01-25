@@ -22,12 +22,6 @@ class TittleFragment : Fragment(R.layout.fragment_title) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
-//        setupViews(requireView())
-    }
-
-    // requireView solo se utilizara si el fragmento requiere algo de alguna vista del padre
-    private fun setupViews(requireView: View) {
-
     }
 
     companion object {

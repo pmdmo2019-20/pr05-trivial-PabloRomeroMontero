@@ -10,7 +10,7 @@ import es.iessaladillo.pedrojoya.pr05_trivial.R
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferencias, rootKey)
-        setupAppBar()
+
     }
 
 
@@ -19,5 +19,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setDisplayHomeAsUpEnabled(true)
             setTitle(R.string.settings_title)
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setupAppBar()
     }
 }
