@@ -150,7 +150,7 @@ class GameFragment : Fragment(R.layout.fragment_game), IObackPress {
             }
         } else {
             DialogFragment()
-                .show(requireFragmentManager(), "ConfirmationDialog")
+                .show(activity!!.supportFragmentManager, "ConfirmationDialog")
         }
         return false
 

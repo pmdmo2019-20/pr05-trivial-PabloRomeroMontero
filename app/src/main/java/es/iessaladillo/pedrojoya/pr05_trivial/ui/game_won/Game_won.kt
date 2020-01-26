@@ -70,6 +70,6 @@ class GameWon : Fragment(R.layout.fragment_game_won), IObackPress {
         activity?.supportFragmentManager?.commit {
             replace(R.id.fcDetail, tittleFragment, "TAG_TITTLE_FRAGMENT")
         }
-        return true
+        return false
     }
 }
