@@ -1,102 +1,127 @@
 package es.iessaladillo.pedrojoya.pr05_trivial.ui.game
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 
 import es.iessaladillo.pedrojoya.pr05_trivial.R
+import es.iessaladillo.pedrojoya.pr05_trivial.base.Database
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.IObackPress
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.about.AboutFragment
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.game_over.Game_overFragment
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.game_won.GameWon
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.main.MainActivity
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.main.MainActivityViewModel
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.main.MainActivityViewModelFactory
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.tittle.TittleFragment
+import kotlinx.android.synthetic.main.fragment_game.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
+//    private val viewModel: MainActivityViewModel by lazy {
+//        ViewModelProvider(viewLifecycleOwner, MainActivityViewModelFactory(Database.newInstance()))
+//            .get(MainActivityViewModel::class.java)
+//    }
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [gameFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [gameFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class gameFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
+    private lateinit var viewModel : MainActivityViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private val settings: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+    }
+    private val numeroDePreguntas: Int by lazy {
+        settings.getInt(
+            getString(R.string.question_key_preference),
+            5
+        )
+    }
+
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
+        viewModel = requireActivity().run {
+            ViewModelProvider(this, MainActivityViewModelFactory(Database.newInstance()))
+                .get(MainActivityViewModel::class.java)        }
+        setupViews()
+    }
+
+    private fun setupViews() {
+        setupAppBar()
+        textViewQuestion.text = viewModel.getQuestion().q
+        a1.text = viewModel.getQuestion().a1
+        a2.text = viewModel.getQuestion().a2
+        a3.text = viewModel.getQuestion().a3
+        a4.text = viewModel.getQuestion().a4
+
+        buttonSubmit.setOnClickListener { comprobar()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_game, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+    private fun comprobar() {
+        var numero = 0
+        when (radioGroup.checkedRadioButtonId) {
+            R.id.a1 -> numero=1
+            R.id.a2 -> numero=2
+            R.id.a3 -> numero=3
+            R.id.a4 -> numero=4
+        }
+        if(numero != 0 && viewModel.comprobar(numero) && viewModel.numeroPreguntasHechas+1==viewModel.listaPreguntas.size) {
+            hasGanado()
+        }else if(numero != 0 && viewModel.comprobar(numero)){
+            nuevaPregunta()
+        }else{
+            viewModel.resetGame(numeroDePreguntas)
+            navegarGameOver()
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+    private fun navegarGameOver() {
+        val gameOverFragment = Game_overFragment()
+        activity?.supportFragmentManager?.commit {
+            replace(R.id.fcDetail, gameOverFragment, "TAG_GAME_OVER_FRAGMENT")
+                .addToBackStack("TAG_GAME_OVER_FRAGMENT")
+        }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    private fun hasGanado() {
+        val gameWonFragment = GameWon()
+        activity?.supportFragmentManager?.commit {
+            replace(R.id.fcDetail, gameWonFragment, "TAG_GAMEWON_FRAGMENT")
+                .addToBackStack("TAG_GAMEWON_FRAGMENT")
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment gameFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            gameFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
+    private fun nuevaPregunta(){
+        val gameFragment = GameFragment()
+        activity?.supportFragmentManager?.commit {
+            replace(R.id.fcDetail, gameFragment, "TAG_GAME_FRAGMENT")
+                .addToBackStack("TAG_GAME_FRAGMENT")
+        }
     }
+
+    private fun setupAppBar() {
+        (requireActivity() as AppCompatActivity).supportActionBar?.run {
+            setDisplayHomeAsUpEnabled(true)
+            title = getString(R.string.game_question_title,viewModel.numeroPreguntasHechas+1,numeroDePreguntas)
+        }
+    }
+
+
+    override fun onBackPressed(): Boolean {
+        val tittleFragment = TittleFragment()
+        activity?.supportFragmentManager?.commit {
+            replace(R.id.fcDetail, tittleFragment, "TAG_TITTLE_FRAGMENT")
+        }
+        return true
+    }
+
 }

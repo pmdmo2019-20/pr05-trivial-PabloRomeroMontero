@@ -13,6 +13,7 @@
         android:icon="@drawable/ic_question_answer_black_24dp"
         android:key="@string/question_key_preference"
         android:max="10"
+        app:min="1"
         android:title="@string/settings_numberOfQuestions"
         app:showSeekBarValue="true" />
 
