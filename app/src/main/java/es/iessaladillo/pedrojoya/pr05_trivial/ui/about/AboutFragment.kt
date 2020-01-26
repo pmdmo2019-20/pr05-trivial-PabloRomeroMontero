@@ -10,8 +10,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 
 import es.iessaladillo.pedrojoya.pr05_trivial.R
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.IObackPress
 
-class AboutFragment : Fragment(R.layout.fragment_about) {
+class AboutFragment : Fragment(R.layout.fragment_about),IObackPress {
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -34,6 +35,10 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
             setDisplayHomeAsUpEnabled(true)
             setTitle(R.string.about_title)
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return true
     }
 
 

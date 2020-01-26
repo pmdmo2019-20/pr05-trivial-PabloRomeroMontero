@@ -39,5 +39,9 @@
     <string name="dialog_key_preference">dialog_key</string>
     <string name="question_key_preference">numberQuestions_key</string>
     <string name="default_numberQuestions">5</string>
+    <string name="dialog_title">Confirmation</string>
+    <string name="message_confirmation">Are you sure you want to quit the game?</string>
+    <string name="dialog_positive">yes</string>
+    <string name="dialog_negative">cancel</string>
 
 </resources>

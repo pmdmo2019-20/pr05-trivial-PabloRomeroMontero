@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 
 import es.iessaladillo.pedrojoya.pr05_trivial.R
@@ -25,13 +26,10 @@ import es.iessaladillo.pedrojoya.pr05_trivial.ui.main.MainActivityViewModelFacto
 import es.iessaladillo.pedrojoya.pr05_trivial.ui.tittle.TittleFragment
 import kotlinx.android.synthetic.main.fragment_game.*
 
-class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
-//    private val viewModel: MainActivityViewModel by lazy {
-//        ViewModelProvider(viewLifecycleOwner, MainActivityViewModelFactory(Database.newInstance()))
-//            .get(MainActivityViewModel::class.java)
-//    }
+class GameFragment : Fragment(R.layout.fragment_game), IObackPress {
 
-    private lateinit var viewModel : MainActivityViewModel
+
+    private lateinit var viewModel: MainActivityViewModel
 
     private val settings: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -42,6 +40,12 @@ class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
             5
         )
     }
+    private val showDialogBoolean: Boolean by lazy {
+        settings.getBoolean(
+            getString(R.string.dialog_key_preference),
+            false
+        )
+    }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,8 +53,21 @@ class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
         setHasOptionsMenu(true)
         viewModel = requireActivity().run {
             ViewModelProvider(this, MainActivityViewModelFactory(Database.newInstance()))
-                .get(MainActivityViewModel::class.java)        }
+                .get(MainActivityViewModel::class.java)
+        }
         setupViews()
+        observeDialog()
+    }
+
+    private fun observeDialog() {
+        viewModel.response.observe(viewLifecycleOwner) {
+            if (it) {
+                val tittleFragment = TittleFragment()
+                activity?.supportFragmentManager?.commit {
+                    replace(R.id.fcDetail, tittleFragment, "TAG_TITTLE_FRAGMENT")
+                }
+            }
+        }
     }
 
     private fun setupViews() {
@@ -61,24 +78,29 @@ class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
         a3.text = viewModel.getQuestion().a3
         a4.text = viewModel.getQuestion().a4
 
-        buttonSubmit.setOnClickListener { comprobar()
+        buttonSubmit.setOnClickListener {
+            comprobar()
         }
     }
 
     private fun comprobar() {
         var numero = 0
         when (radioGroup.checkedRadioButtonId) {
-            R.id.a1 -> numero=1
-            R.id.a2 -> numero=2
-            R.id.a3 -> numero=3
-            R.id.a4 -> numero=4
+            R.id.a1 -> numero = 1
+            R.id.a2 -> numero = 2
+            R.id.a3 -> numero = 3
+            R.id.a4 -> numero = 4
         }
-        if(numero != 0 && viewModel.comprobar(numero) && viewModel.numeroPreguntasHechas+1==viewModel.listaPreguntas.size) {
-            hasGanado()
-        }else if(numero != 0 && viewModel.comprobar(numero)){
-            nuevaPregunta()
-        }else{
-            viewModel.resetGame(numeroDePreguntas)
+        if (numero != 0 && viewModel.comprobar(numero)) {
+            if (viewModel.numeroPreguntasHechas + 1 == viewModel.listaPreguntas.size) {
+                hasGanado()
+
+            } else {
+                nuevaPregunta()
+
+            }
+        } else {
+            viewModel.resetGame()
             navegarGameOver()
         }
     }
@@ -100,7 +122,7 @@ class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
     }
 
 
-    private fun nuevaPregunta(){
+    private fun nuevaPregunta() {
         val gameFragment = GameFragment()
         activity?.supportFragmentManager?.commit {
             replace(R.id.fcDetail, gameFragment, "TAG_GAME_FRAGMENT")
@@ -111,17 +133,28 @@ class GameFragment : Fragment(R.layout.fragment_game),IObackPress {
     private fun setupAppBar() {
         (requireActivity() as AppCompatActivity).supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)
-            title = getString(R.string.game_question_title,viewModel.numeroPreguntasHechas+1,numeroDePreguntas)
+            title = getString(
+                R.string.game_question_title,
+                viewModel.numeroPreguntasHechas + 1,
+                numeroDePreguntas
+            )
         }
     }
 
 
     override fun onBackPressed(): Boolean {
-        val tittleFragment = TittleFragment()
-        activity?.supportFragmentManager?.commit {
-            replace(R.id.fcDetail, tittleFragment, "TAG_TITTLE_FRAGMENT")
+        if (!showDialogBoolean) {
+            val tittleFragment = TittleFragment()
+            activity?.supportFragmentManager?.commit {
+                replace(R.id.fcDetail, tittleFragment, "TAG_TITTLE_FRAGMENT")
+            }
+        } else {
+            DialogFragment()
+                .show(requireFragmentManager(), "ConfirmationDialog")
         }
-        return true
+        return false
+
+
     }
 
 }

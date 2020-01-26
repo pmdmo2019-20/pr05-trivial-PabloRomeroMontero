@@ -31,13 +31,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-//    override fun onBackPressed() {
-//        val fragment =
-//            this.supportFragmentManager.findFragmentById(R.id.fcDetail)
-//        (fragment as? IObackPress)?.onBackPressed()?.not()?.let {
-//            super.onBackPressed()
-//        }
-//    }
+    override fun onBackPressed() {
+        val fragment =
+            this.supportFragmentManager.findFragmentById(R.id.fcDetail)
+        if((fragment as? IObackPress)?.onBackPressed()!!){
+            super.onBackPressed()
+        }
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()

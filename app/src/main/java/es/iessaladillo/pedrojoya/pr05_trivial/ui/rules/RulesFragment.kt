@@ -10,9 +10,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 
 import es.iessaladillo.pedrojoya.pr05_trivial.R
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.IObackPress
 
 
-class RulesFragment : Fragment(R.layout.fragment_rules) {
+class RulesFragment : Fragment(R.layout.fragment_rules),IObackPress {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupViews()
@@ -33,6 +34,10 @@ class RulesFragment : Fragment(R.layout.fragment_rules) {
             setDisplayHomeAsUpEnabled(true)
             setTitle(R.string.rules_title)
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return true
     }
 
 }

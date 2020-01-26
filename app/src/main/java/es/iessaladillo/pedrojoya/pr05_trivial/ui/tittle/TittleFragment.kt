@@ -59,7 +59,7 @@ class TittleFragment : Fragment(R.layout.fragment_title) {
     }
 
     private fun play() {
-        viewModel.resetGame(numeroDePreguntas)
+        viewModel.comenzarJuego(numeroDePreguntas)
         navigateToGame()
     }
 

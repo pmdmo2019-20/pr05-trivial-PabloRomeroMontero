@@ -6,8 +6,9 @@ import androidx.preference.PreferenceFragmentCompat
 
 
 import es.iessaladillo.pedrojoya.pr05_trivial.R
+import es.iessaladillo.pedrojoya.pr05_trivial.ui.IObackPress
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(),IObackPress {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferencias, rootKey)
 
@@ -24,5 +25,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupAppBar()
+    }
+
+    override fun onBackPressed(): Boolean {
+        return true
     }
 }
